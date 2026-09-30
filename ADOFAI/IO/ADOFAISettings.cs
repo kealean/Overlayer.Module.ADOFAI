@@ -9,6 +9,8 @@ public sealed class ADOFAISettings : ISettingsFile {
     public bool HideTitle = false;
     public bool BlockInputWhenOpened = true;
     public bool FileFeature = false;
+    public bool LazyPatches = true;
+    public bool LazyAccess = false;
 
     public JToken Serialize() {
         return new JObject {
@@ -17,6 +19,8 @@ public sealed class ADOFAISettings : ISettingsFile {
             [nameof(HideTitle)] = HideTitle,
             [nameof(BlockInputWhenOpened)] = BlockInputWhenOpened,
             [nameof(FileFeature)] = FileFeature,
+            [nameof(LazyPatches)] = LazyPatches,
+            [nameof(LazyAccess)] = LazyAccess,
         };
     }
 
@@ -26,6 +30,8 @@ public sealed class ADOFAISettings : ISettingsFile {
         HideTitle = Read(token, nameof(HideTitle), HideTitle);
         HideTitle = Read(token, nameof(HideTitle), HideTitle);
         FileFeature = Read(token, nameof(FileFeature), FileFeature);
+        LazyPatches = Read(token, nameof(LazyPatches), LazyPatches);
+        LazyAccess = Read(token, nameof(LazyAccess), LazyAccess);
     }
 
     private static T? Read<T>(JToken token, string key, T fallback) {

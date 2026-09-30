@@ -10,6 +10,7 @@ using Overlayer.Patch.Safe;
 using Overlayer.Resource;
 using Overlayer.UI;
 using Overlayer.UI.Factory;
+using Overlayer.Utility.Access;
 using System;
 using System.IO;
 using System.Reflection;
@@ -68,6 +69,8 @@ public class Core : OverlayerModule {
 
         ConfigFile.Load();
 
+        SafeAccess.ModeOverride = Config.LazyAccess ? SafeResolveMode.Lazy : null;
+
         playbackStateRegistration = PlaybackState.Register(() => {
             return IsPlaying;
         });
@@ -107,7 +110,9 @@ public class Core : OverlayerModule {
         SafePatchController.Add(new SP_SessionAttemptPlay());
         SafePatchController.Add(new SP_FileAttemptLoad());
         SafePatchController.Add(new SP_FileAttemptPlay());
-        SafePatchController.ApplyAll();
+        if(!Config.LazyPatches) {
+            SafePatchController.ApplyAll();
+        }
 
         MainCore.Cam.CustomCameraProvider = () => {
             if (scrCamera.instance != null && scrCamera.instance.camobj != null) {

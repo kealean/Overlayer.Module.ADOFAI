@@ -17,6 +17,15 @@
     "DESC_SHOW_AUTOPLAY_JUDGMENT": "Applies a patch to show the true judgment in AutoPlay on the Hit Error Meter",
     "HIDE_TITLE": "Hide Title",
     "SHOW_AUTOPLAY_JUDGMENT": "Show Autoplay Judgment",
-    "LINUX_TEXT_INPUT_FIX": "Linux Text Input Fix"
+    "LINUX_TEXT_INPUT_FIX": "Linux Text Input Fix",
+    "FILE_FEATURE": "File Feature",
+    "DESC_FILE_FEATURE": "Stores anything per map into Overlayer_Attempts.json next to it",
+    "ADV_DESC_FILE_FEATURE": "Loads the file when a level loads and saves on every play.\n\nPowers the File_Attempts and File_TileAttempts tags.",
+    "LAZY_PATCHES": "Lazy Patches",
+    "DESC_LAZY_PATCHES": "Apply game patches only when their tags are used (recommended)",
+    "ADV_DESC_LAZY_PATCHES": "Lazy keeps startup fast and leaves game code alone until a tag needs its patch, releasing it once unused.\n\nIf you're making overlays with lots of tags, turning this off to apply everything at game start may be better.",
+    "LAZY_ACCESS": "Lazy Access",
+    "DESC_LAZY_ACCESS": "Resolve game members on first use instead of at startup",
+    "ADV_DESC_LAZY_ACCESS": "Lazy access skips the startup scan and finds each game member the first time a tag reads it.\n\nTurn it off to resolve everything up front: slower start, but failures show up immediately instead of mid-game."
   }
 }

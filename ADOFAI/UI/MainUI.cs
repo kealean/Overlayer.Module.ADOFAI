@@ -5,6 +5,7 @@ using Overlayer.Module.ADOFAI.Patch;
 using Overlayer.Patch.Safe;
 using Overlayer.Core;
 using Overlayer.UI.Factory;
+using Overlayer.Utility.Access;
 using O5Kit.Behaviour;
 using O5Kit.Control;
 using O5Kit.Core;
@@ -188,6 +189,43 @@ public static class MainUI {
         fileAttemptToggle.Label.gameObject.AddComponent<TextLocalization>().Init("FILE_FEATURE", "File Feature", Core.Tr);
         objects[fileAttemptToggle.Id] = fileAttemptToggle;
         fileAttemptToggle.Rect.AddToolTip(O5KitAdapters.Ctx, () => TooltipText("DESC_FILE_FEATURE", "Stores anything per map into Overlayer_Attempts.json next to it", "ADV_DESC_FILE_FEATURE", "Loads the file when a level loads and saves on every play.\n\nPowers the File_Attempts and File_TileAttempts tags."));
+
+        O5Toggle lazyPatchesToggle = O5Factory.Toggle(O5KitAdapters.Ctx,
+            O5Factory.Row(O5KitAdapters.Ctx, content.transform),
+            defSet.LazyPatches,
+            Core.Config.LazyPatches,
+            toggle => {
+                Core.Config.LazyPatches = toggle;
+                Core.ConfigFile.RequestSave();
+
+                if(!toggle) {
+                    SafePatchController.ApplyAll();
+                }
+            },
+            "Lazy Patches",
+            "lazy_patches"
+        );
+        lazyPatchesToggle.EnabledWhen = () => MainCore.IsModEnabled;
+        lazyPatchesToggle.Label.gameObject.AddComponent<TextLocalization>().Init("LAZY_PATCHES", "Lazy Patches", Core.Tr);
+        objects[lazyPatchesToggle.Id] = lazyPatchesToggle;
+        lazyPatchesToggle.Rect.AddToolTip(O5KitAdapters.Ctx, () => TooltipText("DESC_LAZY_PATCHES", "Apply game patches only when their tags are used (recommended)", "ADV_DESC_LAZY_PATCHES", "Lazy keeps startup fast and leaves game code alone until a tag needs its patch, releasing it once unused.\n\nIf you're making overlays with lots of tags, turning this off to apply everything at game start may be better."));
+
+        O5Toggle lazyAccessToggle = O5Factory.Toggle(O5KitAdapters.Ctx,
+            O5Factory.Row(O5KitAdapters.Ctx, content.transform),
+            defSet.LazyAccess,
+            Core.Config.LazyAccess,
+            toggle => {
+                Core.Config.LazyAccess = toggle;
+                Core.ConfigFile.RequestSave();
+                SafeAccess.ModeOverride = toggle ? SafeResolveMode.Lazy : null;
+            },
+            "Lazy Access",
+            "lazy_access"
+        );
+        lazyAccessToggle.EnabledWhen = () => MainCore.IsModEnabled;
+        lazyAccessToggle.Label.gameObject.AddComponent<TextLocalization>().Init("LAZY_ACCESS", "Lazy Access", Core.Tr);
+        objects[lazyAccessToggle.Id] = lazyAccessToggle;
+        lazyAccessToggle.Rect.AddToolTip(O5KitAdapters.Ctx, () => TooltipText("DESC_LAZY_ACCESS", "Resolve game members on first use instead of at startup", "ADV_DESC_LAZY_ACCESS", "Lazy access skips the startup scan and finds each game member the first time a tag reads it.\n\nTurn it off to resolve everything up front: slower start, but failures show up immediately instead of mid-game."));
         return;
 
         static void ApplyState<T>(T[] patches, bool enable) where T : SafeConditionalPatch {

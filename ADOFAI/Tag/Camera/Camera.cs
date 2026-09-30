@@ -2,9 +2,9 @@ using Overlayer.Tag.Core;
 using System;
 using UnityEngine;
 
-namespace Overlayer.Module.ADOFAI.Tag;
+namespace Overlayer.Module.ADOFAI.Tag.Camera;
 
-public static class Vfx {
+public static class Camera {
     [Tag(Desc = "Camera X position")] public static float CamX => CamPosition.x;
     [Tag(Desc = "Camera Y position")] public static float CamY => CamPosition.y;
 

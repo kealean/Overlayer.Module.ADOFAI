@@ -3,18 +3,18 @@ using Overlayer.Tag.Core;
 using System;
 using static scrMisc;
 
-namespace Overlayer.Module.ADOFAI.Tag;
+namespace Overlayer.Module.ADOFAI.Tag.Judgment;
 
 public static class TimingWindow {
-    [Tag(Desc = "XPerfect window (ms)")]              public static double XPms => TimeBounds().XPerfect * 1000d;
-    [Tag(Desc = "Inner Perfect window (ms, +-30deg)")]      public static double IPms => TimeBounds().Pure * 1000d;
-    [Tag(Desc = "Outer Perfect window (ms)")]     public static double OPms => TimeBounds().Perfect * 1000d;
-    [Tag(Desc = "Very window (ms)")]          public static double Vms => TimeBounds().Counted * 1000d;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "XPerfect window (ms)")]              public static double XPms => TimeBounds().XPerfect * 1000d;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Inner Perfect window (ms, +-30deg)")]      public static double IPms => TimeBounds().Pure * 1000d;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Outer Perfect window (ms)")]     public static double OPms => TimeBounds().Perfect * 1000d;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Very window (ms)")]          public static double Vms => TimeBounds().Counted * 1000d;
 
-    [Tag(Desc = "XPerfect window (deg)")]             public static double XPdeg => AngleBounds().XPerfect;
-    [Tag(Desc = "Inner Perfect window (deg)")]              public static double IPdeg => AngleBounds().Pure;
-    [Tag(Desc = "Outer Perfect window (deg)")]    public static double OPdeg => AngleBounds().Perfect;
-    [Tag(Desc = "Very window (deg)")]         public static double Vdeg => AngleBounds().Counted;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "XPerfect window (deg)")]             public static double XPdeg => AngleBounds().XPerfect;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Inner Perfect window (deg)")]              public static double IPdeg => AngleBounds().Pure;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Outer Perfect window (deg)")]    public static double OPdeg => AngleBounds().Perfect;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Very window (deg)")]         public static double Vdeg => AngleBounds().Counted;
 
     private static scrMisc.HitMarginGeneralWithXPerfectValuesStruct<double> TimeBounds() {
         var mins = GetMinimumTimes(GCS.difficulty);

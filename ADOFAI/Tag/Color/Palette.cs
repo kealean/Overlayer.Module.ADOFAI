@@ -1,8 +1,8 @@
 ﻿using Overlayer.Tag.Core;
 
-namespace Overlayer.Module.ADOFAI.Tag;
+namespace Overlayer.Module.ADOFAI.Tag.Color;
 
-public static class Color {
+public static class Palette {
     [Tag(Desc = "\"Early!!\" Hex Color")]
     public const string TEHex = "FF0000";
 

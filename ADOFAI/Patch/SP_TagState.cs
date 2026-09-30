@@ -1,5 +1,6 @@
 using HarmonyLib;
 using Overlayer.Module.ADOFAI.Tag;
+using static Overlayer.Module.ADOFAI.Tag.Gameplay.Status;
 using Overlayer.Patch.Safe;
 using System;
 using System.Reflection;

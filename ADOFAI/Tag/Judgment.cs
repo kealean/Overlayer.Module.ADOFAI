@@ -20,7 +20,7 @@ public static class Judgment {
     [Tag(Desc = "Pure XPerfect (excluding Auto)")] public static int PXP => CurrentCount(HitMargin.XPerfect);
 
 
-    [Tag(Desc = "Perfect (EP + PM + XP + PP + LP)")] public static int P => PM + XP + EP;
+    [Tag(Desc = "Perfect (XP + IP)")] public static int P => XP + IP;
     [Tag(Desc = "Fast (TE + VE + EP + PM)")]         public static int Fast => TE + VE + EP + PM;
     [Tag(Desc = "Slow (PP + LP + VL + TL)")]         public static int Slow => PP + LP + VL + TL;
     [Tag(Desc = "Inner Perfects (PM + PP)")]         public static int IP => PM + PP;
@@ -43,12 +43,12 @@ public static class Combo {
         : Array.Empty<HitMargin>();
 
     public static int ComboValue => Tail(Current, IsPerfect);
-    [Tag(Name = "Combo")] public static int ComboTag => ComboValue;
-    [Tag] public static int MaxCombo => MaxRun(Current, IsPerfect);
-    [Tag(TagType = TagType.ProcessFormat)] public static int MarginCombo(HitMargin margin) => Tail(Current, hit => hit == margin);
-    [Tag(TagType = TagType.ProcessFormat)] public static int MarginMaxCombo(HitMargin margin) => MaxRun(Current, hit => hit == margin);
-    [Tag(TagType = TagType.ProcessFormat)] public static int MarginCombos(string margins) => Tail(Current, Parse(margins));
-    [Tag(TagType = TagType.ProcessFormat)] public static int MarginMaxCombos(string margins) => MaxRun(Current, Parse(margins));
+    [Tag(Name = "Combo", Desc = "Current combo")] public static int ComboTag => ComboValue;
+    [Tag(Desc = "Max combo")] public static int MaxCombo => MaxRun(Current, IsPerfect);
+    [Tag(TagType = TagType.ProcessFormat, Desc = "Current combo of a judgment")] public static int MarginCombo(HitMargin margin) => Tail(Current, hit => hit == margin);
+    [Tag(TagType = TagType.ProcessFormat, Desc = "Max combo of a judgment")] public static int MarginMaxCombo(HitMargin margin) => MaxRun(Current, hit => hit == margin);
+    [Tag(TagType = TagType.ProcessFormat, Desc = "Current combo of judgments (a|b|...)")] public static int MarginCombos(string margins) => Tail(Current, Parse(margins));
+    [Tag(TagType = TagType.ProcessFormat, Desc = "Max combo of judgments (a|b|...)")] public static int MarginMaxCombos(string margins) => MaxRun(Current, Parse(margins));
 
     internal static int Tail(IReadOnlyList<HitMargin> values, Func<HitMargin, bool> matches) {
         int count = 0;

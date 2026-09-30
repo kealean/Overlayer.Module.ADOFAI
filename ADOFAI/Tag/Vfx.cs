@@ -5,8 +5,8 @@ using UnityEngine;
 namespace Overlayer.Module.ADOFAI.Tag;
 
 public static class Vfx {
-    [Tag] public static float CamX => CamPosition.x;
-    [Tag] public static float CamY => CamPosition.y;
+    [Tag(Desc = "Camera X position")] public static float CamX => CamPosition.x;
+    [Tag(Desc = "Camera Y position")] public static float CamY => CamPosition.y;
 
     [Tag(Desc = "Camera rotation in degrees (0-359)")]
     public static float CamRot => NormalizedRotation;

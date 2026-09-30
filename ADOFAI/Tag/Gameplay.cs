@@ -60,7 +60,7 @@ public static class Gameplay {
 
     [Tag] public static double Timing => GameplayState.Timing;
     [Tag] public static double TimingAvg => GameplayState.Timings.Count == 0 ? 0 : GameplayState.Timings.Average();
-    [Tag] public static double MarginScale => Controller?.currFloor?.marginScale ?? 0;
+    [Tag] public static double MarginScale => Controller?.currFloor?.marginScale ?? 1;
 
     [Tag] public static int CurMinute => SongTime.Minutes;
     [Tag] public static int CurSecond => SongTime.Seconds;

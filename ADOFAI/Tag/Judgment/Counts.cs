@@ -1,22 +1,28 @@
 using Overlayer.Tag.Core;
-using System;
+using Overlayer.Utility.Access;
 
 namespace Overlayer.Module.ADOFAI.Tag.Judgment;
 
 public static class Counts {
-    private static scrMarginTracker? Tracker => scrController.instance?.playerOne?.marginTracker;
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Too Early")]     public static int TE => CurrentCount(HitMargin.TooEarly);
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Very Early")]    public static int VE => CurrentCount(HitMargin.VeryEarly);
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Early Perfect")] public static int EP => CurrentCount(HitMargin.EarlyPerfect);
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Perfect Minus")] public static int PM => CurrentCount(HitMargin.PerfectMinus);
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "XPerfect")]      public static int XP => CurrentCount(HitMargin.XPerfect) + A;
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Perfect Plus")]  public static int PP => CurrentCount(HitMargin.PerfectPlus);
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Late Perfect")]  public static int LP => CurrentCount(HitMargin.LatePerfect);
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Very Late")]     public static int VL => CurrentCount(HitMargin.VeryLate);
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Too Late")]      public static int TL => CurrentCount(HitMargin.TooLate);
+    private static object Tracker() {
+        var controller = GameAccess.Controller.Get(null);
+        if(controller == null) return null;
+        var player = GameAccess.PlayerOne.Get(controller);
+        return player == null ? null : GameAccess.MarginTracker.Get(player);
+    }
 
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Auto")]                           public static int A => CurrentCount(HitMargin.Auto);
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Pure XPerfect (excluding Auto)")] public static int PXP => CurrentCount(HitMargin.XPerfect);
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Too Early")]     public static int TE => CurrentCount("TooEarly");
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Very Early")]    public static int VE => CurrentCount("VeryEarly");
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Early Perfect")] public static int EP => CurrentCount("EarlyPerfect");
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Perfect Minus")] public static int PM => CurrentCount("PerfectMinus");
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "XPerfect")]      public static int XP => CurrentCount("XPerfect") + A;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Perfect Plus")]  public static int PP => CurrentCount("PerfectPlus");
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Late Perfect")]  public static int LP => CurrentCount("LatePerfect");
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Very Late")]     public static int VL => CurrentCount("VeryLate");
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Too Late")]      public static int TL => CurrentCount("TooLate");
+
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Auto")]                           public static int A => CurrentCount("Auto");
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Pure XPerfect (excluding Auto)")] public static int PXP => CurrentCount("XPerfect");
 
     [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Perfect (XP + IP)")]                  public static int P => XP + IP;
     [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Fast (TE + VE + EP + PM)")]           public static int Fast => TE + VE + EP + PM;
@@ -26,21 +32,35 @@ public static class Counts {
     [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Very Early & Very Late (VE + VL)")]   public static int V => VE + VL;
     [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Too Early & Too Late (TE + TL)")]     public static int T => TE + TL;
 
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Number of Misses")]       public static int Miss => CurrentCount(HitMargin.FailMiss);
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Number of Overloads")]    public static int Overload => CurrentCount(HitMargin.FailOverload);
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Total Deaths/Fails")]     public static int Fail => Tracker?.GetDeaths() ?? 0;
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Number of Multipresses")] public static int Multipress => CurrentCount(HitMargin.Multipress);
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Number of OverPress")]    public static int OverPress => CurrentCount(HitMargin.OverPress);
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Number of Misses")]       public static int Miss => CurrentCount("FailMiss");
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Number of Overloads")]    public static int Overload => CurrentCount("FailOverload");
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Total Deaths/Fails")]     public static int Fail => Deaths();
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Number of Multipresses")] public static int Multipress => CurrentCount("Multipress");
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Number of OverPress")]    public static int OverPress => CurrentCount("OverPress");
 
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Accuracy (0-1)")]  public static double Accuracy => Ratio(Tracker?.percentAcc);
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "XAccuracy (0-1)")] public static double XAccuracy => Ratio(Tracker?.percentXAcc);
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Accuracy (0-1)")]  public static double Accuracy => GameAccess.PercentAcc.Get(Tracker(), float.NaN);
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "XAccuracy (0-1)")] public static double XAccuracy => GameAccess.PercentXAcc.Get(Tracker(), float.NaN);
     [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Accuracy (%)")]  public static double AccuracyPercent => Accuracy * 100d;
     [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "XAccuracy (%)")] public static double XAccuracyPercent => XAccuracy * 100d;
 
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "X-Score")]       public static int XScore => Tracker?.xScore ?? 0;
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Max X-Score")]   public static int MaxXScore => Tracker?.maxXScore ?? 0;
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Last X-Score")]  public static int LastXScore => Tracker?.lastXScore ?? 0;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "X-Score")]       public static int XScore => GameAccess.XScoreValue.Get(Tracker(), 0);
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Max X-Score")]   public static int MaxXScore => GameAccess.MaxXScoreValue.Get(Tracker(), 0);
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Last X-Score")]  public static int LastXScore => GameAccess.LastXScoreValue.Get(Tracker(), 0);
 
-    private static int CurrentCount(HitMargin margin) => Tracker?.GetHits(margin) ?? 0;
-    private static double Ratio(float? value) => value ?? double.NaN;
+    private static int CurrentCount(string margin) {
+        var tracker = Tracker();
+        var value = GameAccess.ParseHitMargin(margin);
+        if(tracker == null || value == null) return 0;
+        return SafeAccess.TryCall(tracker, "GetHits", out object result, value) && result is int count
+            ? count
+            : 0;
+    }
+
+    private static int Deaths() {
+        var tracker = Tracker();
+        if(tracker == null) return 0;
+        return SafeAccess.TryCall(tracker, "GetDeaths", out object result) && result is int count
+            ? count
+            : 0;
+    }
 }

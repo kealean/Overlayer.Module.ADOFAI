@@ -1,13 +1,19 @@
-using ADOFAI;
 using Overlayer.Tag.Core;
 using System;
-using System.Collections.Generic;
+using System.Collections;
 
 namespace Overlayer.Module.ADOFAI.Tag.Gameplay;
 
 public static class Time {
-    private static scrController? Controller => scrController.instance;
-    private static List<scrFloor>? Floors => scrLevelMaker.instance?.listFloors;
+    private static object Song() {
+        var conductor = GameAccess.Conductor.Get(null);
+        return conductor == null ? null : GameAccess.Song.Get(conductor);
+    }
+
+    private static IList Floors() {
+        var maker = GameAccess.LevelMaker.Get(null);
+        return maker == null ? null : GameAccess.FloorList.Get(maker) as IList;
+    }
 
     [Tag(Desc = "Song time (days)")] public static int SongDay => SongTime.Days;
     [Tag(Desc = "Song time (hours)")] public static int SongHour => SongTime.Hours;
@@ -25,21 +31,40 @@ public static class Time {
     [Tag(Desc = "Map time (seconds)")] public static int MapSecond => MapElapsed.Seconds;
     [Tag(Desc = "Map time (milliseconds)")] public static int MapMilliSecond => MapElapsed.Milliseconds;
 
-    private static TimeSpan SongTime => TimeSpan.FromSeconds(Math.Max(0, scrConductor.instance?.song?.time ?? 0));
-    private static TimeSpan SongLength => TimeSpan.FromSeconds(Math.Max(0, scrConductor.instance?.song?.clip?.length ?? 0));
-    private static TimeSpan MapSpan {
+    private static TimeSpan SongTime {
         get {
-            var floors = Floors;
-            if(floors == null || floors.Count == 0) return TimeSpan.Zero;
-            return TimeSpan.FromSeconds(Math.Max(0, floors[^1].entryTime - floors[0].entryTime));
+            var song = Song();
+            double seconds = song == null ? 0 : GameAccess.SongTime.Get(song);
+            return TimeSpan.FromSeconds(Math.Max(0, seconds));
         }
     }
+
+    private static TimeSpan SongLength {
+        get {
+            var song = Song();
+            var clip = song == null ? null : GameAccess.SongClip.Get(song);
+            float length = clip == null ? 0 : GameAccess.ClipLength.Get(clip);
+            return TimeSpan.FromSeconds(Math.Max(0, length));
+        }
+    }
+
+    private static TimeSpan MapSpan {
+        get {
+            var floors = Floors();
+            if(floors == null || floors.Count == 0) return TimeSpan.Zero;
+            double span = GameAccess.EntryTime.Get(floors[floors.Count - 1]) - GameAccess.EntryTime.Get(floors[0]);
+            return TimeSpan.FromSeconds(Math.Max(0, span));
+        }
+    }
+
     private static TimeSpan MapElapsed {
         get {
-            var floors = Floors;
-            var floor = Controller?.currFloor;
+            var floors = Floors();
+            var controller = GameAccess.Controller.Get(null);
+            var floor = controller == null ? null : GameAccess.CurrFloor.Get(controller);
             if(floors == null || floors.Count == 0 || floor == null) return TimeSpan.Zero;
-            return TimeSpan.FromSeconds(Math.Max(0, floor.entryTime - floors[0].entryTime));
+            double elapsed = GameAccess.EntryTime.Get(floor) - GameAccess.EntryTime.Get(floors[0]);
+            return TimeSpan.FromSeconds(Math.Max(0, elapsed));
         }
     }
 }

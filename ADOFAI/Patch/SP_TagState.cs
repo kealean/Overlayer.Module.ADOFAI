@@ -1,7 +1,7 @@
 using HarmonyLib;
-using Overlayer.Module.ADOFAI.Tag;
-using static Overlayer.Module.ADOFAI.Tag.Gameplay.Status;
+using Overlayer.Module.ADOFAI.Tag.Gameplay;
 using Overlayer.Patch.Safe;
+using Overlayer.Utility.Access;
 using System;
 using System.Reflection;
 
@@ -11,7 +11,7 @@ public sealed class SP_ResetTagState() : SafeConditionalPatch(nameof(SP_ResetTag
     protected override bool ShouldApply() => true;
     protected override MethodBase GetTargetMethod() => SafePatch.GetMethodSafe("scrMarginTracker", "Reset");
     protected override HarmonyMethod Postfix() => new(typeof(SP_ResetTagState).GetMethod(nameof(PostfixImpl), BindingFlags.Static | BindingFlags.NonPublic));
-    private static void PostfixImpl() => GameplayState.Reset();
+    private static void PostfixImpl() => Status.GameplayState.Reset();
 }
 
 public sealed class SP_RecordTiming() : SafeConditionalPatch(nameof(SP_RecordTiming)) {
@@ -19,12 +19,22 @@ public sealed class SP_RecordTiming() : SafeConditionalPatch(nameof(SP_RecordTim
     protected override MethodBase GetTargetMethod() => SafePatch.GetMethodSafe("scrPlanet", "SwitchChosen");
     protected override HarmonyMethod Prefix() => new(typeof(SP_RecordTiming).GetMethod(nameof(PrefixImpl), BindingFlags.Static | BindingFlags.NonPublic));
 
-    private static void PrefixImpl(scrPlanet __instance) {
-        var controller = scrController.instance;
-        if(controller == null || __instance.conductor == null) return;
-        double denominator = Math.PI * __instance.conductor.bpm * controller.currFloor.speed * __instance.conductor.song.pitch;
+    private static void PrefixImpl(object __instance) {
+        if(__instance == null) return;
+        var controller = GameAccess.Controller.Get(null);
+        if(controller == null) return;
+        if(!SafeAccess.TryRead(__instance, "conductor", out object conductor) || conductor == null) return;
+        var floor = GameAccess.CurrFloor.Get(controller);
+        if(floor == null) return;
+        if(!SafeAccess.TryRead(__instance, "angle", out object angleObj) || angleObj is not IConvertible) return;
+        if(!SafeAccess.TryRead(__instance, "targetExitAngle", out object exitObj) || exitObj is not IConvertible) return;
+        double angle = Convert.ToDouble(angleObj);
+        double exitAngle = Convert.ToDouble(exitObj);
+        double denominator = Math.PI * GameAccess.ConductorBpm.Get(conductor)
+            * GameAccess.FloorSpeed.Get(floor) * GameAccess.SongPitch.Get(GameAccess.Song.Get(conductor));
         if(denominator == 0) return;
-        double timing = (__instance.angle - __instance.targetExitAngle) * (controller.currFloor.isCCW ? -1d : 1d) * 60000d / denominator;
-        GameplayState.RecordTiming(timing);
+        bool isCCW = GameAccess.FloorIsCCW.Get(floor);
+        double timing = (angle - exitAngle) * (isCCW ? -1d : 1d) * 60000d / denominator;
+        Status.GameplayState.RecordTiming(timing);
     }
 }

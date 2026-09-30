@@ -20,10 +20,15 @@ public class SP_BlockAsyncInput() : SafeConditionalPatch(nameof(SP_BlockAsyncInp
         }
 
         __result = false;
-        AsyncInputManager.ClearKeys();
-        AsyncInputManager.frameDependentKeyMask.Clear();
-        AsyncInputManager.frameDependentKeyDownMask.Clear();
-        AsyncInputManager.frameDependentKeyUpMask.Clear();
+        GameAccess.ClearKeysFn.TryInvoke(null, out _);
+        ClearMask(GameAccess.FrameKeyMask.Get(null));
+        ClearMask(GameAccess.FrameKeyDownMask.Get(null));
+        ClearMask(GameAccess.FrameKeyUpMask.Get(null));
         return false;
+    }
+
+    private static void ClearMask(object mask) {
+        if(mask == null) return;
+        Overlayer.Utility.Access.SafeAccess.TryCall(mask, "Clear", out _);
     }
 }

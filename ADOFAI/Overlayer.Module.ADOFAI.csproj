@@ -28,8 +28,6 @@
 		<Reference Include="Overlayer" HintPath="$(OverlayerPath)/bin/Release_ML/netstandard2.1/Overlayer.dll" />
         <Reference Include="0Harmony" HintPath="$(GamePath)/MelonLoader/net35/0Harmony.dll" />
         <Reference Include="Accessibility" HintPath="$(GamePath)/$(GameData)/Managed/Accessibility.dll" />
-        <Reference Include="Assembly-CSharp-firstpass" HintPath="$(GamePath)/$(GameData)/Managed/Assembly-CSharp-firstpass.dll" />
-        <Reference Include="Assembly-CSharp" HintPath="$(GamePath)/$(GameData)/Managed/Assembly-CSharp.dll" />
         <Reference Include="DemiLib" HintPath="$(GamePath)/$(GameData)/Managed/DemiLib.dll" />
         <Reference Include="DOTween" HintPath="$(GamePath)/$(GameData)/Managed/DOTween.dll" />
         <Reference Include="DOTweenPro" HintPath="$(GamePath)/$(GameData)/Managed/DOTweenPro.dll" />

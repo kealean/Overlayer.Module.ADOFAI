@@ -1,5 +1,8 @@
 using ADOFAI;
+using Overlayer.Module.ADOFAI.IO.File;
+using Overlayer.Module.ADOFAI.Patch;
 using Overlayer.ModuleAPI;
+using Overlayer.Patch.Lazy;
 using Overlayer.Tag.Core;
 using System;
 using System.Collections.Generic;
@@ -13,6 +16,7 @@ public static class Status {
     private static LevelData? Level => scnGame.instance?.levelData ?? scnEditor.instance?.levelData;
 
     [Tag(Desc = "Speed trial pitch")] public static double SpeedPitch => GCS.currentSpeedTrial;
+    [Tag(Desc = "Playing")] public static bool IsPlaying => PlaybackState.IsPlaying;
     [Tag(Desc = "Difficulty (localized)")] public static string Difficulty => RDString.Get($"enum.Difficulty.{GCS.difficulty}");
     [Tag(Desc = "Difficulty (raw)")] public static string DifficultyRaw => GCS.difficulty.ToString();
 
@@ -47,9 +51,26 @@ public static class Status {
             return level == null ? 0 : Persistence.GetCustomWorldAttempts(level.Hash);
         }
     }
+    [Tag(Desc = "Session attempts (volatile)")]
+    [NeedsPatch(typeof(SP_SessionAttemptLoad), typeof(SP_SessionAttemptPlay))]
+    public static int SessionAttempts => SessionAttemptState.Count;
+    [Tag(Desc = "[File] Attempts")]
+    [NeedsPatch(typeof(SP_FileAttemptLoad), typeof(SP_FileAttemptPlay))]
+    public static int File_Attempts => FileStoreState.Current.Data.Attempts;
+    [Tag(Desc = "[File] Attempts for a tile, current tile if -1")]
+    [NeedsPatch(typeof(SP_FileAttemptLoad), typeof(SP_FileAttemptPlay))]
+    public static int File_TileAttempts(int tile = -1)
+        => FileStoreState.Current.Data.GetTileAttempts(tile < 0 ? Progress.CurTile : tile);
+    [Tag(Desc = "New map (no record)")]
+    [NeedsPatch(typeof(SP_FileAttemptLoad), typeof(SP_FileAttemptPlay))]
+    public static bool IsNewMap => !FileStoreState.Current.HasRecord && !FileStore.HasGameRecord();
 
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Last hit timing (ms)")] public static double TimingMs => GameplayState.Timing;
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Average hit timing (ms)")] public static double TimingAvgMs => GameplayState.Timings.Count == 0 ? 0 : GameplayState.Timings.Average();
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Last hit timing (ms)")]
+    [NeedsPatch(typeof(SP_RecordTiming), typeof(SP_ResetTagState))]
+    public static double TimingMs => GameplayState.Timing;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Average hit timing (ms)")]
+    [NeedsPatch(typeof(SP_RecordTiming), typeof(SP_ResetTagState))]
+    public static double TimingAvgMs => GameplayState.Timings.Count == 0 ? 0 : GameplayState.Timings.Average();
     [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Timing Window Scale")] public static double MarginScale => Controller?.currFloor?.marginScale ?? 1;
 
     internal static class GameplayState {

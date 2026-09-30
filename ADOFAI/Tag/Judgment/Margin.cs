@@ -5,23 +5,23 @@ using static scrMisc;
 
 namespace Overlayer.Module.ADOFAI.Tag.Judgment;
 
-public static class TimingWindow {
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "XPerfect window (ms)")]              public static double XPms => TimeBounds().XPerfect * 1000d;
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Inner Perfect window (ms, +-30deg)")]      public static double IPms => TimeBounds().Pure * 1000d;
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Outer Perfect window (ms)")]     public static double OPms => TimeBounds().Perfect * 1000d;
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Very window (ms)")]          public static double Vms => TimeBounds().Counted * 1000d;
+public static class Margin {
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "XPerfect margin (ms)")] public static double MarginXPms => TimeBounds().XPerfect * 1000d;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Inner Perfect margin (ms, +-30deg)")] public static double MarginIPms => TimeBounds().Pure * 1000d;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Outer Perfect margin (ms)")] public static double MarginOPms => TimeBounds().Perfect * 1000d;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Very margin (ms)")] public static double MarginVms => TimeBounds().Counted * 1000d;
 
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "XPerfect window (deg)")]             public static double XPdeg => AngleBounds().XPerfect;
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Inner Perfect window (deg)")]              public static double IPdeg => AngleBounds().Pure;
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Outer Perfect window (deg)")]    public static double OPdeg => AngleBounds().Perfect;
-    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Very window (deg)")]         public static double Vdeg => AngleBounds().Counted;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "XPerfect margin (deg)")] public static double MarginXPdeg => AngleBounds().XPerfect;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Inner Perfect margin (deg)")] public static double MarginIPdeg => AngleBounds().Pure;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Outer Perfect margin (deg)")] public static double MarginOPdeg => AngleBounds().Perfect;
+    [Tag(TagType = TagType.BlockOnNotPlaying, Desc = "Very margin (deg)")] public static double MarginVdeg => AngleBounds().Counted;
 
-    [Tag(Desc = "Manual window (ms): judgment, bpm, speed = 1, scale = 1")]
-    public static double WindowMs(HitMargin judgment, double bpm, double speed = 1, double scale = 1)
+    [Tag(Desc = "Manual margin (ms): judgment, bpm, speed = 1, scale = 1")]
+    public static double MarginCalcMs(HitMargin judgment, double bpm, double speed = 1, double scale = 1)
         => PickManual(judgment, ManualTimeBounds(bpm, speed, scale)) * 1000d;
 
-    [Tag(Desc = "Manual window (deg): judgment, bpm, speed = 1, scale = 1")]
-    public static double WindowDeg(HitMargin judgment, double bpm, double speed = 1, double scale = 1)
+    [Tag(Desc = "Manual margin (deg): judgment, bpm, speed = 1, scale = 1")]
+    public static double MarginCalcDeg(HitMargin judgment, double bpm, double speed = 1, double scale = 1)
         => PickManual(judgment, ManualAngleBounds(bpm, speed, scale));
 
     private static double PickManual(HitMargin judgment, scrMisc.HitMarginGeneralWithXPerfectValuesStruct<double> bounds)

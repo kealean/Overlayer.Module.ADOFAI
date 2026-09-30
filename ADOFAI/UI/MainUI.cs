@@ -161,7 +161,7 @@ public static class MainUI {
             toggle => {
                 Core.Config.HideTitle = toggle;
                 Core.ConfigFile.RequestSave();
-                GCS.d_dontShowTitles = toggle;
+                GameAccess.DontShowTitles.TrySet(null, toggle);
             },
             "Hide Title",
             "hide_title"

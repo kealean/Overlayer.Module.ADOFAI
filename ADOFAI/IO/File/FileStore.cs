@@ -1,4 +1,3 @@
-using ADOFAI;
 using System.IO;
 
 namespace Overlayer.Module.ADOFAI.IO.File;
@@ -34,19 +33,29 @@ public sealed class FileStore {
     }
 
     internal static bool HasGameRecord() {
-        if(ADOBase.isOfficialLevel) {
+        if(GameAccess.IsOfficialLevelFlag.Get(null)) {
             try {
-                return Persistence.GetWorldAttempts(scrController.currentWorld) > 0;
+                var controller = GameAccess.Controller.Get(null);
+                int world = controller == null ? -1 : GameAccess.CurrentWorld.Get(controller, -1);
+                if(world < 0) return false;
+                return GameAccess.WorldAttemptsFn.TryInvoke(null, out object result, world)
+                    && result is int count && count > 0;
             } catch {
                 return false;
             }
         }
-        var level = scnGame.instance?.levelData;
-        return level != null && Persistence.GetCustomWorldAttempts(level.Hash) > 0;
+        var scnGame = GameAccess.ScnGame.Get(null);
+        var level = scnGame == null ? null : GameAccess.GameLevelData.Get(scnGame);
+        if(level == null) return false;
+        string hash = GameAccess.LevelHash.Get(level);
+        if(string.IsNullOrEmpty(hash)) return false;
+        return GameAccess.CustomAttemptsFn.TryInvoke(null, out object attempts, hash)
+            && attempts is int n && n > 0;
     }
 
     private static string? GetPath() {
-        string? level = scnGame.instance?.levelPath;
+        var scnGame = GameAccess.ScnGame.Get(null);
+        string level = scnGame == null ? null : GameAccess.LevelPath.Get(scnGame);
         if(string.IsNullOrEmpty(level)) return null;
         string? dir = System.IO.Path.GetDirectoryName(level);
         return string.IsNullOrEmpty(dir) ? null : System.IO.Path.Combine(dir, FileName);

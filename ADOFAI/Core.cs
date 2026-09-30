@@ -42,19 +42,23 @@ public class Core : OverlayerModule {
 
     public static bool IsPlaying {
         get {
-            var cdt = scrConductor.instance;
-            var ctrl = scrController.instance;
-            var edt = scnEditor.instance;
+            var cdt = GameAccess.Conductor.Get(null);
+            var ctrl = GameAccess.Controller.Get(null);
+            var edt = GameAccess.ScnEditor.Get(null);
 
-            if (cdt == null || !cdt.isGameWorld) {
+            if(cdt == null || !GameAccess.IsGameWorldFlag.Get(cdt)) {
                 return false;
             }
 
-            if (ctrl == null) {
+            if(ctrl == null) {
                 return false;
             }
 
-            return !ctrl.paused || (edt != null && edt.pausedInPlayMode);
+            if(!GameAccess.Paused.Get(ctrl)) {
+                return true;
+            }
+
+            return edt != null && GameAccess.EditorPausedInPlayMode.Get(edt);
         }
     }
 
@@ -75,11 +79,21 @@ public class Core : OverlayerModule {
             return IsPlaying;
         });
         pausedStateRegistration = PlaybackState.RegisterPaused(() => {
-            return scrController.instance?.paused ?? false;
+            var controller = GameAccess.Controller.Get(null);
+            return controller != null && GameAccess.Paused.Get(controller);
         });
         textFontRegistration = TextFontProvider.Register(() => {
             if(defaultTextFont == null) {
-                Font sourceFont = RDString.GetFontDataForLanguage(SystemLanguage.English).font;
+                object fontData = null;
+                if(GameAccess.FontDataForLanguage.TryInvoke(null, out object result, UnityEngine.SystemLanguage.English)) {
+                    fontData = result;
+                }
+                Font sourceFont = fontData != null && Overlayer.Utility.Access.SafeAccess.TryRead(fontData, "font", out object fontObj)
+                    ? fontObj as Font
+                    : null;
+                if(sourceFont == null) {
+                    return defaultTextFont;
+                }
                 defaultTextFont = TMP_FontAsset.CreateFontAsset(
                     sourceFont,
                     100,
@@ -92,7 +106,7 @@ public class Core : OverlayerModule {
             return defaultTextFont;
         });
 
-        GCS.d_dontShowTitles = Config.HideTitle;
+        GameAccess.DontShowTitles.TrySet(null, Config.HideTitle);
 
         SafePatchController.Add(new SP_BlockAsyncInput());
         SafePatchController.Add(new SP_BlockLegacyInput());
@@ -115,10 +129,9 @@ public class Core : OverlayerModule {
         }
 
         MainCore.Cam.CustomCameraProvider = () => {
-            if (scrCamera.instance != null && scrCamera.instance.camobj != null) {
-                return scrCamera.instance.camobj;
-            }
-            return null;
+            var cam = GameAccess.Cam.Get(null);
+            var camobj = cam == null ? null : GameAccess.CamObj.Get(cam);
+            return camobj as UnityEngine.Camera;
         };
 
         MainUI.CreateInputBlocker(UICore.CanvasObj.transform);
@@ -127,7 +140,7 @@ public class Core : OverlayerModule {
     }
 
     public override void OnDispose() {
-        GCS.d_dontShowTitles = false;
+        GameAccess.DontShowTitles.TrySet(null, false);
 
         playbackStateRegistration?.Dispose();
         playbackStateRegistration = null;

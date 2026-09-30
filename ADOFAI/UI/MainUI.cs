@@ -169,6 +169,25 @@ public static class MainUI {
         hideTitleToggle.Label.gameObject.AddComponent<TextLocalization>().Init("HIDE_TITLE", "Hide Title", Core.Tr);
         objects[hideTitleToggle.Id] = hideTitleToggle;
         hideTitleToggle.Rect.AddToolTip(O5KitAdapters.Ctx, () => TooltipText("DESC_HIDE_TITLE", "Hides in-game level titles using GCS setting", "ADV_DESC_HIDE_TITLE", "Controls the unused static flag 'GCS.d_dontShowTitles' in game memory.\n\nADOFAI's codebase contains logic that reads 'd_dontShowTitles' to hide level titles during gameplay,\nbut the game never assigns a value to this field anywhere.\n\nThis option exposes control over that field directly,\nenabling native title hiding without needing additional patches"));
+
+        O5Toggle fileAttemptToggle = O5Factory.Toggle(O5KitAdapters.Ctx,
+            O5Factory.Row(O5KitAdapters.Ctx, content.transform),
+            defSet.FileFeature,
+            Core.Config.FileFeature,
+            toggle => {
+                Core.Config.FileFeature = toggle;
+                Core.ConfigFile.RequestSave();
+
+                ApplyState(SafePatchController.Get<SP_FileAttemptLoad>(), toggle);
+                ApplyState(SafePatchController.Get<SP_FileAttemptPlay>(), toggle);
+            },
+            "File Feature",
+            "file_feature"
+        );
+        fileAttemptToggle.EnabledWhen = () => MainCore.IsModEnabled;
+        fileAttemptToggle.Label.gameObject.AddComponent<TextLocalization>().Init("FILE_FEATURE", "File Feature", Core.Tr);
+        objects[fileAttemptToggle.Id] = fileAttemptToggle;
+        fileAttemptToggle.Rect.AddToolTip(O5KitAdapters.Ctx, () => TooltipText("DESC_FILE_FEATURE", "Stores anything per map into Overlayer_Attempts.json next to it", "ADV_DESC_FILE_FEATURE", "Loads the file when a level loads and saves on every play.\n\nPowers the File_Attempts and File_TileAttempts tags."));
         return;
 
         static void ApplyState<T>(T[] patches, bool enable) where T : SafeConditionalPatch {

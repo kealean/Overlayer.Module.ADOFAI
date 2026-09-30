@@ -103,6 +103,10 @@ public class Core : OverlayerModule {
         SafePatchController.Add(new SP_ShowAutoJudgment());
         SafePatchController.Add(new SP_ResetTagState());
         SafePatchController.Add(new SP_RecordTiming());
+        SafePatchController.Add(new SP_SessionAttemptLoad());
+        SafePatchController.Add(new SP_SessionAttemptPlay());
+        SafePatchController.Add(new SP_FileAttemptLoad());
+        SafePatchController.Add(new SP_FileAttemptPlay());
         SafePatchController.ApplyAll();
 
         MainCore.Cam.CustomCameraProvider = () => {

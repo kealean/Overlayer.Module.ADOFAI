@@ -8,6 +8,7 @@ public sealed class ADOFAISettings : ISettingsFile {
     public bool LinuxTextInputFix = true;
     public bool HideTitle = false;
     public bool BlockInputWhenOpened = true;
+    public bool FileFeature = false;
 
     public JToken Serialize() {
         return new JObject {
@@ -15,6 +16,7 @@ public sealed class ADOFAISettings : ISettingsFile {
             [nameof(LinuxTextInputFix)] = LinuxTextInputFix,
             [nameof(HideTitle)] = HideTitle,
             [nameof(BlockInputWhenOpened)] = BlockInputWhenOpened,
+            [nameof(FileFeature)] = FileFeature,
         };
     }
 
@@ -23,6 +25,7 @@ public sealed class ADOFAISettings : ISettingsFile {
         LinuxTextInputFix = Read(token, nameof(LinuxTextInputFix), LinuxTextInputFix);
         HideTitle = Read(token, nameof(HideTitle), HideTitle);
         HideTitle = Read(token, nameof(HideTitle), HideTitle);
+        FileFeature = Read(token, nameof(FileFeature), FileFeature);
     }
 
     private static T? Read<T>(JToken token, string key, T fallback) {

@@ -21,6 +21,7 @@ namespace Overlayer.Module.ADOFAI;
 
 public class Core : OverlayerModule {
     private IDisposable? playbackStateRegistration;
+    private IDisposable? pausedStateRegistration;
     private IDisposable? textFontRegistration;
     private static TMP_FontAsset? defaultTextFont;
     public static Assembly Assembly { get; } = Assembly.GetExecutingAssembly();
@@ -70,6 +71,9 @@ public class Core : OverlayerModule {
         playbackStateRegistration = PlaybackState.Register(() => {
             return IsPlaying;
         });
+        pausedStateRegistration = PlaybackState.RegisterPaused(() => {
+            return scrController.instance?.paused ?? false;
+        });
         textFontRegistration = TextFontProvider.Register(() => {
             if(defaultTextFont == null) {
                 Font sourceFont = RDString.GetFontDataForLanguage(SystemLanguage.English).font;
@@ -118,6 +122,8 @@ public class Core : OverlayerModule {
 
         playbackStateRegistration?.Dispose();
         playbackStateRegistration = null;
+        pausedStateRegistration?.Dispose();
+        pausedStateRegistration = null;
         textFontRegistration?.Dispose();
         textFontRegistration = null;
 

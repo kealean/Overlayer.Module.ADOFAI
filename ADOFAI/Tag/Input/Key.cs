@@ -47,8 +47,8 @@ public static class Key {
         }
     }
 
-    [Tag(Desc = "Whether a key is currently held (SkyHook name: Space, A, LShift, LControl, LAlt, ArrowUp, Enter, Escape, ...)")]
-    public static bool IsKeyDown(string key) {
+    [Tag(Desc = "[SkyHook] Returns true while the specified key is held down (OS-level hook, works even when Unity input is blocked)\nEx) {IsSkyHookKeyHeld:Space}, {IsSkyHookKeyHeld:LShift}")]
+    public static bool IsSkyHookKeyHeld(string key) {
         EnsureSubscribed();
         if(string.IsNullOrWhiteSpace(key)) return false;
         KeyLabel label;

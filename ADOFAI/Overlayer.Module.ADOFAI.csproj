@@ -46,6 +46,7 @@
         <Reference Include="Purchasing.Common" HintPath="$(GamePath)/$(GameData)/Managed/Purchasing.Common.dll" />
         <Reference Include="RDTools" HintPath="$(GamePath)/$(GameData)/Managed/RDTools.dll" />
         <Reference Include="Rewired_Core" HintPath="$(GamePath)/$(GameData)/Managed/Rewired_Core.dll" />
+        <Reference Include="SkyHook.Unity" HintPath="$(GamePath)/$(GameData)/Managed/SkyHook.Unity.dll" />
         <Reference Include="Rewired_Windows" HintPath="$(GamePath)/$(GameData)/Managed/Rewired_Windows.dll" />
         <Reference Include="Rewired_Windows_Functions" HintPath="$(GamePath)/$(GameData)/Managed/Rewired_Windows_Functions.dll" />
         <Reference Include="Unity.Addressables" HintPath="$(GamePath)/$(GameData)/Managed/Unity.Addressables.dll" />

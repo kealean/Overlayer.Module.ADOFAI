@@ -142,6 +142,8 @@ public class Core : OverlayerModule {
     public override void OnDispose() {
         GameAccess.DontShowTitles.TrySet(null, false);
 
+        Tag.Input.Key.Shutdown();
+
         playbackStateRegistration?.Dispose();
         playbackStateRegistration = null;
         pausedStateRegistration?.Dispose();

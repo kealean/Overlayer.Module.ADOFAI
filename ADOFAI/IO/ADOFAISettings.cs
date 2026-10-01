@@ -10,7 +10,7 @@ public sealed class ADOFAISettings : ISettingsFile {
     public bool BlockInputWhenOpened = true;
     public bool FileFeature = false;
     public bool LazyPatches = true;
-    public bool LazyAccess = false;
+    public bool LazyAccess = true;
 
     public JToken Serialize() {
         return new JObject {

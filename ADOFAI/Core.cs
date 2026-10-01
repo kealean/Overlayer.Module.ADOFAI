@@ -127,6 +127,11 @@ public class Core : OverlayerModule {
         if(!Config.LazyPatches) {
             SafePatchController.ApplyAll();
         }
+        // Linux input fix is never lazy: no tag triggers it, so lazy mode
+        // would leave it off until the toggle is cycled. Apply() is
+        // self-guarded (platform + config) and idempotent under ApplyAll.
+        foreach(var patch in SafePatchController.Get<SP_LinuxTMPKeyInput>()) patch.Apply();
+        foreach(var patch in SafePatchController.Get<SP_LinuxLegacyKeyInput>()) patch.Apply();
 
         MainCore.Cam.CustomCameraProvider = () => {
             var cam = GameAccess.Cam.Get(null);

@@ -74,7 +74,6 @@ public class Core : OverlayerModule {
         ConfigFile.Load();
 
         SafeAccess.ModeOverride = Config.LazyAccess ? SafeResolveMode.Lazy : null;
-
         playbackStateRegistration = PlaybackState.Register(() => {
             return IsPlaying;
         });
@@ -88,7 +87,7 @@ public class Core : OverlayerModule {
                 if(GameAccess.FontDataForLanguage.TryInvoke(null, out object result, UnityEngine.SystemLanguage.English)) {
                     fontData = result;
                 }
-                Font sourceFont = fontData != null && Overlayer.Utility.Access.SafeAccess.TryRead(fontData, "font", out object fontObj)
+                Font sourceFont = fontData != null && SafeAccess.TryRead(fontData, "font", out object fontObj)
                     ? fontObj as Font
                     : null;
                 if(sourceFont == null) {

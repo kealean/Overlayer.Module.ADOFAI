@@ -25,15 +25,24 @@ public static class Combo {
     [Tag(TagType = TagType.ProcessFormat | TagType.BlockOnNotPlaying, Desc = "Current combo of judgments (a|b|...)")] public static int MarginCombos(string margins) => Tail(Current, Matches(ParseMany(margins)));
     [Tag(TagType = TagType.ProcessFormat | TagType.BlockOnNotPlaying, Desc = "Max combo of judgments (a|b|...)")] public static int MarginMaxCombos(string margins) => MaxRun(Current, Matches(ParseMany(margins)));
 
+    internal static bool IsMidspin(object margin) {
+        return margin != null && margin.ToString() == "Midspin";
+    }
+
     internal static int Tail(IList values, Func<object, bool> matches) {
         int count = 0;
-        for(int i = values.Count - 1; i >= 0 && matches(values[i]); i--) count++;
+        for(int i = values.Count - 1; i >= 0; i--) {
+            if(IsMidspin(values[i])) continue;
+            if(!matches(values[i])) break;
+            count++;
+        }
         return count;
     }
 
     internal static int MaxRun(IList values, Func<object, bool> matches) {
         int best = 0, current = 0;
         foreach(object value in values) {
+            if(IsMidspin(value)) continue;
             current = matches(value) ? current + 1 : 0;
             if(current > best) best = current;
         }
